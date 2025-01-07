@@ -35,10 +35,8 @@ ARG INSTALL_XDEBUG=false
 ARG XDEBUG_VERSION=3.3.1
 RUN if [ ${INSTALL_XDEBUG} = true ]; \
     then \
-      git clone --branch ${XDEBUG_VERSION} --depth 1 https://github.com/xdebug/xdebug.git /usr/src/php/ext/xdebug \
-        && docker-php-ext-configure xdebug --enable-xdebug-dev \
-        && docker-php-ext-install xdebug \
-        && docker-php-source delete; \
+       pecl install xdebug-$XDEBUG_VERSION \
+         && docker-php-ext-enable xdebug; \
     fi
 
 RUN mv $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini

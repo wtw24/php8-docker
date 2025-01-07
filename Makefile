@@ -26,10 +26,10 @@ create-networks:
 	@docker network create develop proxy 2>/dev/null || true
 
 create-env-file:
-	@docker run --rm -it -v ${PWD}/:/app -u 1000:1000 -w /app bash:5.2 bash docker/bin/create-env-file.sh
+	@docker run --rm -it -v ${PWD}/:/app -u $(shell id -u):$(shell id -g) -w /app bash:5.2 bash docker/bin/create-env-file.sh
 
 create-bash-history-file:
-	@docker run --rm -v ${PWD}/:/app -u 1000:1000 -w /app bash:5.2 bash docker/bin/create-bash_history.sh
+	@docker run --rm -v ${PWD}/:/app -u $(shell id -u):$(shell id -g) -w /app bash:5.2 bash docker/bin/create-bash_history.sh
 
 php:
 	docker compose run --rm php-cli bash
@@ -45,7 +45,9 @@ composer-install:
 success:
 	@echo "\033[32m "
 	@echo "Docker Compose Stack successfully started!"
+	@echo "\033[0m"
 
 info:
 	@echo "STACK URLS:"
 	@echo " - App: \t https://app.localhost"
+	@echo ""
