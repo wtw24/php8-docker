@@ -1,4 +1,4 @@
-# PHP8 Docker Development Environment
+# PHP 8.4 Docker Development Environment
 
 
 ## Links for Development Environment
@@ -30,6 +30,10 @@ cd docker/development/nginx/certs
 ~~~
 ~~~shell
 mkcert -cert-file local-cert.pem -key-file local-key.pem "app.localhost" "*.app.localhost"
+~~~
+or
+~~~shell
+make certs
 ~~~
 
 

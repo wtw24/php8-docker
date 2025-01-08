@@ -51,3 +51,6 @@ info:
 	@echo "STACK URLS:"
 	@echo " - App: \t https://app.localhost"
 	@echo ""
+
+certs:
+	cd docker/development/nginx/certs && mkcert -cert-file local-cert.pem -key-file local-key.pem "app.localhost" "*.app.localhost"
