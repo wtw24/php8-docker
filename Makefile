@@ -4,7 +4,7 @@ up: docker-up success info
 down: docker-down
 restart: down up
 
-pre-scripts: create-networks create-env-file create-bash-history-file
+pre-scripts: create-env-file create-bash-history-file
 
 docker-up:
 	docker compose up -d
@@ -20,10 +20,6 @@ docker-pull:
 
 docker-build:
 	docker compose build --pull
-
-create-networks:
-	@docker network create proxy proxy 2>/dev/null || true
-	@docker network create develop proxy 2>/dev/null || true
 
 create-env-file:
 	@docker run --rm -it -v ${PWD}/:/app -u $(shell id -u):$(shell id -g) -w /app bash:5.2 bash docker/bin/create-env-file.sh
@@ -58,3 +54,5 @@ info:
 certs:
 	cd docker/development/nginx/certs && mkcert -cert-file local-cert.pem -key-file local-key.pem "app.loc" "*.app.loc"
 	cd docker/development/node/certs && mkcert -cert-file local-cert.pem -key-file local-key.pem "localhost"
+
+-include src/Makefile
