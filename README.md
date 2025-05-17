@@ -2,13 +2,13 @@
 
 
 ## Links for Development Environment
-- http://app.localhost
-- https://app.localhost
+- http://app.loc
+- https://app.loc
 
 
 ## Add subdomains to host /etc/hosts
 ~~~shell
-127.0.0.1 app.localhost
+127.0.0.1 app.loc
 ~~~
 
 # HTTPS (SSL) on localhost
@@ -24,12 +24,12 @@ sudo apt install libnss3-tools mkcert
 mkcert -install
 ~~~
 
-## Generate certificate for domain `app.localhost` and their subdomains
+## Generate certificate for domain `app.loc` and their subdomains
 ~~~shell
 cd docker/development/nginx/certs
 ~~~
 ~~~shell
-mkcert -cert-file local-cert.pem -key-file local-key.pem "app.localhost" "*.app.localhost"
+mkcert -cert-file local-cert.pem -key-file local-key.pem "app.loc" "*.app.loc"
 ~~~
 or
 ~~~shell

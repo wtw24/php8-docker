@@ -37,6 +37,9 @@ php:
 node:
 	docker compose run --rm node bash
 
+vite:
+	docker compose run --rm --service-ports node bash -c "npm run dev"
+
 app-init: composer-install
 
 composer-install:
@@ -49,8 +52,9 @@ success:
 
 info:
 	@echo "STACK URLS:"
-	@echo " - App: \t https://app.localhost"
+	@echo " - App: \t https://app.loc"
 	@echo ""
 
 certs:
-	cd docker/development/nginx/certs && mkcert -cert-file local-cert.pem -key-file local-key.pem "app.localhost" "*.app.localhost"
+	cd docker/development/nginx/certs && mkcert -cert-file local-cert.pem -key-file local-key.pem "app.loc" "*.app.loc"
+	cd docker/development/node/certs && mkcert -cert-file local-cert.pem -key-file local-key.pem "localhost"
