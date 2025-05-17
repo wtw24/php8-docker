@@ -51,7 +51,11 @@ ARG HOST_USER_ID=1000
 ARG HOST_GROUP_ID=1000
 RUN apk --no-cache add shadow && \
     groupmod -o -g ${HOST_GROUP_ID} www-data && \
-    usermod -o -u ${HOST_USER_ID} -g www-data www-data
+    usermod -o -u ${HOST_USER_ID} -g www-data www-data && \
+    mkdir -p /home/www-data && \
+    chown www-data:www-data /home/www-data
+
+ENV HOME=/home/www-data
 
 # Source code
 RUN mkdir /app \

@@ -47,8 +47,9 @@ services:
     environment:
       TZ: "${TIMEZONE:-Europe/Berlin}"
     volumes:
-      - "./src:/app"
-      - "./docker/development/php-cli/bash:/home/www-data"
+      - ./src:/app
+      - ./docker/development/php-cli/bash/.bashrc:/home/www-data/.bashrc
+      - ./docker/development/php-cli/bash/.bash_history:/home/www-data/.bash_history
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
