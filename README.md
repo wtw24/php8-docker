@@ -26,10 +26,12 @@ mkcert -install
 
 ## Generate certificate for domain `app.loc` and their subdomains
 ~~~shell
-cd docker/development/nginx/certs
-~~~
-~~~shell
-mkcert -cert-file local-cert.pem -key-file local-key.pem "app.loc" "*.app.loc"
+cd docker/development/nginx/certs \
+  && mkcert -cert-file local-cert.pem -key-file local-key.pem "app.loc" "*.app.loc" \
+  && cd -
+cd docker/development/node/certs \
+  && mkcert -cert-file local-cert.pem -key-file local-key.pem "localhost" \
+  && cd -
 ~~~
 or
 ~~~shell
