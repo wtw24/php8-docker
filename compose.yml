@@ -1,24 +1,24 @@
-name: "dev-app"
+name: dev-app
 
 services:
   nginx:
-    container_name: "dev-app-nginx"
+    container_name: dev-app-nginx
     build:
-      context: "docker/development"
-      dockerfile: "nginx/Dockerfile"
+      context: docker/development
+      dockerfile: nginx/Dockerfile
     environment:
       TZ: "${TIMEZONE:-Europe/Berlin}"
     ports:
       - "${APP_HTTP_PORT:-80}:80"
       - "${APP_HTTPS_PORT:-443}:443"
     volumes:
-      - "./src:/app"
+      - ./src:/app
 
   php-fpm:
-    container_name: "dev-app-php-fpm"
+    container_name: dev-app-php-fpm
     build:
-      context: "docker/development"
-      dockerfile: "php-fpm/Dockerfile"
+      context: docker/development
+      dockerfile: php-fpm/Dockerfile
       args:
         PHP_VERSION: "${PHP_VERSION:-8.3}"
         HOST_USER_ID: "${HOST_USER_ID:-1000}"
@@ -29,15 +29,15 @@ services:
       TZ: "${TIMEZONE:-Europe/Berlin}"
       PHP_IDE_CONFIG: "serverName=${PHP_IDE_CONFIG_SERVER_NAME:-dev-app}"
     volumes:
-      - "./src:/app"
+      - ./src:/app
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
   php-cli:
-    container_name: "dev-app-php-cli"
+    container_name: dev-app-php-cli
     build:
-      context: "docker/development"
-      dockerfile: "php-cli/Dockerfile"
+      context: docker/development
+      dockerfile: php-cli/Dockerfile
       args:
         PHP_VERSION: "${PHP_VERSION:-8.3}"
         HOST_USER_ID: "${HOST_USER_ID:-1000}"
@@ -54,10 +54,10 @@ services:
       - "host.docker.internal:host-gateway"
 
   node:
-    container_name: "dev-app-node"
+    container_name: dev-app-node
     build:
-      context: "docker/development"
-      dockerfile: "node/Dockerfile"
+      context: docker/development
+      dockerfile: node/Dockerfile
       args:
         HOST_USER_ID: "${HOST_USER_ID:-1000}"
         HOST_GROUP_ID: "${HOST_GROUP_ID:-1000}"
@@ -66,12 +66,13 @@ services:
     environment:
       TZ: "${TZ:-Europe/Berlin}"
     volumes:
-      - "./src:/app"
-      - "./docker/development/node/bash:/home/node"
+      - ./src:/app
+      - ./docker/development/node/bash/.bashrc:/home/node/.bashrc
+      - ./docker/development/node/bash/.bash_history:/home/node/.bash_history
 
   mariadb:
     image: "mariadb:${MARIADB_VERSION:-10.6}"
-    container_name: "app-mariadb"
+    container_name: app-mariadb
     ports:
       - "${FORWARD_DB_PORT:-3306}:3306"
     environment:
@@ -81,9 +82,7 @@ services:
       MARIADB_USER: "${DB_USERNAME:-app}"
       MARIADB_PASSWORD: "${DB_PASSWORD:-app}"
     volumes:
-      - 'mariadb_data:/var/lib/mysql'
-    networks:
-      - "default"
+      - mariadb_data:/var/lib/mysql
 
 volumes:
   mariadb_data:
