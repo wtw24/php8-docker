@@ -1,4 +1,4 @@
-FROM node:21-alpine
+FROM node:23-alpine
 
 RUN apk add --no-cache \
     tzdata \
@@ -15,3 +15,9 @@ RUN deluser --remove-home node \
   && adduser -S -G node -u ${HOST_USER_ID} node
 
 USER node
+
+COPY --chmod=755 ./node/certs /etc/app/certs
+
+ARG VITE_PORT=5173
+
+EXPOSE ${VITE_PORT}
