@@ -21,9 +21,10 @@ RUN apk add --no-cache \
     libpng-dev \
     libjpeg-turbo-dev \
     libwebp-dev \
+    postgresql-dev \
   && apk add --update linux-headers \
   && docker-php-ext-configure zip \
-  && docker-php-ext-install pdo_mysql exif zip
+  && docker-php-ext-install pdo_mysql pdo_pgsql pgsql exif zip
 
 # GD
 RUN apk add --update --no-cache \

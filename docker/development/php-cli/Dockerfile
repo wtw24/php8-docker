@@ -14,6 +14,13 @@ RUN apk add --no-cache \
     autoconf \
     zip \
     libzip-dev \
+    freetype \
+    libpng \
+    libjpeg-turbo \
+    freetype-dev \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    libwebp-dev \
     postgresql-dev \
   && apk add --update linux-headers \
   && docker-php-ext-configure zip \
