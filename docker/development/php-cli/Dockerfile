@@ -66,5 +66,6 @@ WORKDIR /app
 # Install Laravel installer globally
 RUN composer global require laravel/installer
 ENV PATH="/home/www-data/.composer/vendor/bin:$PATH"
+ENV COMPOSER_CACHE_DIR=/dev/null
 
 USER www-data
