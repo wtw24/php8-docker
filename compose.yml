@@ -84,18 +84,18 @@ services:
 #    volumes:
 #      - mariadb_data:/var/lib/mysql
 
-#  postgres:
-#    image: postgres:${POSTGRES_VERSION:-15}
-#    container_name: app-postgres
-#    ports:
-#      - "${FORWARD_PG_PORT:-5432}:5432"
-#    environment:
-#      TZ: "${TIMEZONE:-Europe/Berlin}"
-#      POSTGRES_DB: "${PG_DATABASE:-app}"
-#      POSTGRES_USER: "${PG_USERNAME:-app}"
-#      POSTGRES_PASSWORD: "${PG_PASSWORD:-secret}"
-#    volumes:
-#      - postgres_data:/var/lib/postgresql/data
+  postgres:
+    image: postgres:${POSTGRES_VERSION:-15}
+    container_name: app-postgres
+    ports:
+      - "${FORWARD_PG_PORT:-5432}:5432"
+    environment:
+      TZ: "${TIMEZONE:-Europe/Berlin}"
+      POSTGRES_DB: "${PG_DATABASE:-app}"
+      POSTGRES_USER: "${PG_USERNAME:-app}"
+      POSTGRES_PASSWORD: "${PG_PASSWORD:-secret}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
   mariadb_data:
