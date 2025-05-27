@@ -63,4 +63,8 @@ RUN mkdir /app \
 
 WORKDIR /app
 
+# Install Laravel installer globally
+RUN composer global require laravel/installer
+ENV PATH="/home/www-data/.composer/vendor/bin:$PATH"
+
 USER www-data
