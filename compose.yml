@@ -70,19 +70,19 @@ services:
       - ./docker/development/node/bash/.bashrc:/home/node/.bashrc
       - ./docker/development/node/bash/.bash_history:/home/node/.bash_history
 
-#  mariadb:
-#    image: "mariadb:${MARIADB_VERSION:-10.6}"
-#    container_name: app-mariadb
-#    ports:
-#      - "${FORWARD_DB_PORT:-3306}:3306"
-#    environment:
-#      TZ: "${TIMEZONE:-Europe/Berlin}"
-#      MARIADB_ROOT_PASSWORD: "${DB_ROOT_PASSWORD:-root}"
-#      MARIADB_DATABASE: "${DB_DATABASE:-app}"
-#      MARIADB_USER: "${DB_USERNAME:-app}"
-#      MARIADB_PASSWORD: "${DB_PASSWORD:-app}"
-#    volumes:
-#      - mariadb_data:/var/lib/mysql
+  mariadb:
+    image: "mariadb:${MARIADB_VERSION:-10.6}"
+    container_name: app-mariadb
+    ports:
+      - "${FORWARD_DB_PORT:-3306}:3306"
+    environment:
+      TZ: "${TIMEZONE:-Europe/Berlin}"
+      MARIADB_ROOT_PASSWORD: "${DB_ROOT_PASSWORD:-root}"
+      MARIADB_DATABASE: "${DB_DATABASE:-app}"
+      MARIADB_USER: "${DB_USERNAME:-app}"
+      MARIADB_PASSWORD: "${DB_PASSWORD:-app}"
+    volumes:
+      - mariadb_data:/var/lib/mysql
 
   postgres:
     image: postgres:${POSTGRES_VERSION:-15}
