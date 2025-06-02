@@ -7,13 +7,16 @@ restart: down up
 pre-scripts: create-env-file create-bash-history-file
 
 docker-up:
-	docker compose up -d
+	chmod +x docker-up.sh
+	./docker-up.sh
 
 docker-down:
-	docker compose down --remove-orphans
+	chmod +x docker-down.sh
+	./docker-down.sh --remove-orphans
 
 docker-down-clear:
-	docker compose down -v --remove-orphans
+	chmod +x docker-down.sh
+	./docker-down.sh -v --remove-orphans
 
 docker-pull:
 	docker compose pull

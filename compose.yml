@@ -73,6 +73,8 @@ services:
   mariadb:
     image: "mariadb:${MARIADB_VERSION:-10.6}"
     container_name: app-mariadb
+    profiles:
+      - mariadb
     ports:
       - "${FORWARD_DB_PORT:-3306}:3306"
     environment:
@@ -87,6 +89,8 @@ services:
   postgres:
     image: postgres:${POSTGRES_VERSION:-15}
     container_name: app-postgres
+    profiles:
+      - postgres
     ports:
       - "${FORWARD_PG_PORT:-5432}:5432"
     environment:
@@ -97,8 +101,22 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  redis:
+    image: redis:7
+    container_name: app-redis
+    profiles:
+      - redis
+    ports:
+      - "${FORWARD_REDIS_PORT:-6379}:6379"
+    environment:
+      TZ: "${TIMEZONE:-Europe/Berlin}"
+    volumes:
+      - redis_data:/data
+
 volumes:
   mariadb_data:
     driver: local
   postgres_data:
+    driver: local
+  redis_data:
     driver: local
