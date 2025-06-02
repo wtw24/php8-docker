@@ -6,23 +6,23 @@ restart: down up
 
 pre-scripts: create-env-file create-bash-history-file
 
-docker-up:
-	chmod +x docker-up.sh
-	./docker-up.sh
+docker-up: chmod-compose
+	./docker-compose.sh up
 
-docker-down:
-	chmod +x docker-down.sh
-	./docker-down.sh --remove-orphans
+docker-down: chmod-compose
+	./docker-compose.sh down --remove-orphans
 
-docker-down-clear:
-	chmod +x docker-down.sh
-	./docker-down.sh -v --remove-orphans
+docker-down-clear: chmod-compose
+	./docker-compose.sh down -v --remove-orphans
 
 docker-pull:
 	docker compose pull
 
 docker-build:
 	docker compose build --pull
+
+chmod-compose:
+	chmod +x docker-compose.sh
 
 create-env-file:
 	@docker run --rm -it -v ${PWD}/:/app -u $(shell id -u):$(shell id -g) -w /app bash:5.2 bash docker/bin/create-env-file.sh

@@ -6,11 +6,9 @@ services:
     build:
       context: docker/development
       dockerfile: nginx/Dockerfile
-    environment:
-      TZ: "${TIMEZONE:-Europe/Berlin}"
     ports:
-      - "${APP_HTTP_PORT:-80}:80"
-      - "${APP_HTTPS_PORT:-443}:443"
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
     volumes:
       - ./src:/app
 
@@ -26,8 +24,7 @@ services:
         INSTALL_XDEBUG: "${INSTALL_XDEBUG:-false}"
         XDEBUG_VERSION: "${XDEBUG_VERSION:-3.2.2}"
     environment:
-      TZ: "${TIMEZONE:-Europe/Berlin}"
-      PHP_IDE_CONFIG: "serverName=${PHP_IDE_CONFIG_SERVER_NAME:-dev-app}"
+      PHP_IDE_CONFIG: "serverName=${PHP_IDE_CONFIG_SERVER_NAME:-app-loc}"
     volumes:
       - ./src:/app
     extra_hosts:
@@ -44,8 +41,6 @@ services:
         HOST_GROUP_ID: "${HOST_GROUP_ID:-1000}"
         INSTALL_XDEBUG: "${INSTALL_XDEBUG:-false}"
         XDEBUG_VERSION: "${XDEBUG_VERSION:-3.2.2}"
-    environment:
-      TZ: "${TIMEZONE:-Europe/Berlin}"
     volumes:
       - ./src:/app
       - ./docker/development/php-cli/bash/.bashrc:/home/www-data/.bashrc
@@ -76,25 +71,23 @@ services:
     profiles:
       - mariadb
     ports:
-      - "${FORWARD_DB_PORT:-3306}:3306"
+      - "${FORWARD_MARIADB_PORT:-3306}:3306"
     environment:
-      TZ: "${TIMEZONE:-Europe/Berlin}"
-      MARIADB_ROOT_PASSWORD: "${DB_ROOT_PASSWORD:-root}"
-      MARIADB_DATABASE: "${DB_DATABASE:-app}"
-      MARIADB_USER: "${DB_USERNAME:-app}"
-      MARIADB_PASSWORD: "${DB_PASSWORD:-app}"
+      MARIADB_ROOT_PASSWORD: "${MARIADB_ROOT_PASSWORD:-root}"
+      MARIADB_DATABASE: "${MARIADB_DATABASE:-app}"
+      MARIADB_USER: "${MARIADB_USERNAME:-app}"
+      MARIADB_PASSWORD: "${MARIADB_PASSWORD:-secret}"
     volumes:
       - mariadb_data:/var/lib/mysql
 
   postgres:
-    image: postgres:${POSTGRES_VERSION:-15}
+    image: "postgres:${POSTGRES_VERSION:-17-alpine}"
     container_name: app-postgres
     profiles:
       - postgres
     ports:
       - "${FORWARD_PG_PORT:-5432}:5432"
     environment:
-      TZ: "${TIMEZONE:-Europe/Berlin}"
       POSTGRES_DB: "${PG_DATABASE:-app}"
       POSTGRES_USER: "${PG_USERNAME:-app}"
       POSTGRES_PASSWORD: "${PG_PASSWORD:-secret}"
@@ -102,14 +95,12 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   redis:
-    image: redis:7
+    image: "redis:${REDIS_VERSION:-7-alpine}"
     container_name: app-redis
     profiles:
       - redis
     ports:
       - "${FORWARD_REDIS_PORT:-6379}:6379"
-    environment:
-      TZ: "${TIMEZONE:-Europe/Berlin}"
     volumes:
       - redis_data:/data
 
