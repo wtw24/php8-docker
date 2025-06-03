@@ -1,42 +1,35 @@
 ARG PHP_VERSION=8.4
 FROM php:${PHP_VERSION}-fpm-alpine
 
-RUN apk add --no-cache \
-    tzdata \
-    mysql-client \
-    bash \
-    curl \
-    git \
-    unzip \
-    build-base \
-    zlib-dev \
-    oniguruma-dev \
-    autoconf \
-    zip \
-    libzip-dev \
-    freetype \
-    libpng \
-    libjpeg-turbo \
-    freetype-dev \
-    libpng-dev \
-    libjpeg-turbo-dev \
-    libwebp-dev \
-    postgresql-dev \
-  && apk add --update linux-headers \
-  && docker-php-ext-configure zip \
-  && docker-php-ext-install pdo_mysql pdo_pgsql pgsql exif zip
-
-# GD
-RUN apk add --update --no-cache \
-    freetype libpng libjpeg-turbo \
-    freetype-dev libpng-dev libjpeg-turbo-dev libwebp-dev \
-    && docker-php-ext-configure gd \
-        --with-freetype \
-        --with-jpeg \
-        --with-webp \
-    NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) \
-    && docker-php-ext-install -j$(nproc) gd \
-    && apk del --no-cache freetype-dev libpng-dev libjpeg-turbo-dev
+RUN apk add --no-cache --virtual .build-deps \
+        build-base \
+        autoconf \
+        zlib-dev \
+        oniguruma-dev \
+        libzip-dev \
+        freetype-dev \
+        libpng-dev \
+        libjpeg-turbo-dev \
+        libwebp-dev \
+        postgresql-dev \
+    && apk add --no-cache \
+        tzdata \
+        bash \
+        curl \
+        git \
+        unzip \
+        linux-headers \
+        freetype \
+        libpng \
+        libjpeg-turbo \
+        libwebp \
+        mysql-client \
+        libpq \
+        libzip \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && docker-php-ext-configure zip \
+    && docker-php-ext-install -j$(nproc) gd zip exif pdo_mysql pgsql pdo_pgsql \
+    && apk del .build-deps
 
 RUN mv $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
 COPY ./php/conf.d /usr/local/etc/php/conf.d
@@ -44,7 +37,6 @@ COPY ./php/conf.d /usr/local/etc/php/conf.d
 # Xdebug
 ARG PHP_VERSION
 ARG INSTALL_XDEBUG=false
-
 RUN if [ "${INSTALL_XDEBUG}" = "true" ]; then \
       PHP_MODULE_PREFIX="php$(echo ${PHP_VERSION} | grep -oE '^[0-9]+\.[0-9]+' | tr -d '.')"; \
       apk add --no-cache "${PHP_MODULE_PREFIX}-pecl-xdebug"; \
