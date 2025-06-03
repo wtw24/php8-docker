@@ -1,4 +1,4 @@
-ARG PHP_VERSION=8.3
+ARG PHP_VERSION=8.4
 FROM php:${PHP_VERSION}-cli-alpine
 
 RUN apk add --no-cache \
@@ -38,18 +38,19 @@ RUN apk add --update --no-cache \
     && docker-php-ext-install -j$(nproc) gd \
     && apk del --no-cache freetype-dev libpng-dev libjpeg-turbo-dev
 
-# Xdebug
-ARG INSTALL_XDEBUG=false
-ARG XDEBUG_VERSION=3.3.1
-RUN if [ ${INSTALL_XDEBUG} = true ]; \
-    then \
-       pecl install xdebug-$XDEBUG_VERSION \
-         && docker-php-ext-enable xdebug; \
-    fi
-
 RUN mv $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
 
 COPY ./php/conf.d /usr/local/etc/php/conf.d
+
+# Xdebug
+ARG INSTALL_XDEBUG=false
+ARG PHP_VERSION
+
+RUN if [ "${INSTALL_XDEBUG}" = "true" ]; then \
+      PHP_MODULE_PREFIX="php$(echo ${PHP_VERSION} | grep -oE '^[0-9]+\.[0-9]+' | tr -d '.')"; \
+      apk add --no-cache "${PHP_MODULE_PREFIX}-pecl-xdebug"; \
+      echo "zend_extension=/usr/lib/${PHP_MODULE_PREFIX}/modules/xdebug.so" > "$(php-config --ini-dir)/docker-php-ext-xdebug.ini"; \
+    fi
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/bin --filename=composer --quiet \
     && rm -rf /root/.composer/cache
