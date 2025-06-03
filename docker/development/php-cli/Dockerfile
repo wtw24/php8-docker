@@ -39,12 +39,11 @@ RUN apk add --update --no-cache \
     && apk del --no-cache freetype-dev libpng-dev libjpeg-turbo-dev
 
 RUN mv $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
-
 COPY ./php/conf.d /usr/local/etc/php/conf.d
 
 # Xdebug
-ARG INSTALL_XDEBUG=false
 ARG PHP_VERSION
+ARG INSTALL_XDEBUG=false
 
 RUN if [ "${INSTALL_XDEBUG}" = "true" ]; then \
       PHP_MODULE_PREFIX="php$(echo ${PHP_VERSION} | grep -oE '^[0-9]+\.[0-9]+' | tr -d '.')"; \
@@ -52,29 +51,26 @@ RUN if [ "${INSTALL_XDEBUG}" = "true" ]; then \
       echo "zend_extension=/usr/lib/${PHP_MODULE_PREFIX}/modules/xdebug.so" > "$(php-config --ini-dir)/docker-php-ext-xdebug.ini"; \
     fi
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/bin --filename=composer --quiet \
-    && rm -rf /root/.composer/cache
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Configure non-root user.
+# non-root user
 ARG HOST_USER_ID=1000
 ARG HOST_GROUP_ID=1000
-RUN apk --no-cache add shadow && \
-    groupmod -o -g ${HOST_GROUP_ID} www-data && \
-    usermod -o -u ${HOST_USER_ID} -g www-data www-data && \
-    mkdir -p /home/www-data && \
-    chown www-data:www-data /home/www-data
+RUN apk add --no-cache shadow \
+    && groupmod -o -g ${HOST_GROUP_ID} www-data \
+    &&usermod -o -u ${HOST_USER_ID} -g www-data www-data
+
+RUN mkdir -p /home/www-data && chown www-data:www-data /home/www-data \
+    && mkdir /app && chown www-data:www-data /app \
+    && mkdir -p /home/www-data/.composer/vendor/bin
 
 ENV HOME=/home/www-data
+ENV PATH="/home/www-data/.composer/vendor/bin:$PATH"
 
-# Source code
-RUN mkdir /app \
-  && chown www-data:www-data /app
+# Laravel installer
+RUN composer global require laravel/installer
+ENV COMPOSER_CACHE_DIR=/dev/null
 
 WORKDIR /app
-
-# Install Laravel installer globally
-RUN composer global require laravel/installer
-ENV PATH="/home/www-data/.composer/vendor/bin:$PATH"
-ENV COMPOSER_CACHE_DIR=/dev/null
 
 USER www-data

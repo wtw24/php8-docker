@@ -39,12 +39,11 @@ RUN apk add --update --no-cache \
     && apk del --no-cache freetype-dev libpng-dev libjpeg-turbo-dev
 
 RUN mv $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
-
 COPY ./php/conf.d /usr/local/etc/php/conf.d
 
 # Xdebug
-ARG INSTALL_XDEBUG=false
 ARG PHP_VERSION
+ARG INSTALL_XDEBUG=false
 
 RUN if [ "${INSTALL_XDEBUG}" = "true" ]; then \
       PHP_MODULE_PREFIX="php$(echo ${PHP_VERSION} | grep -oE '^[0-9]+\.[0-9]+' | tr -d '.')"; \
@@ -52,21 +51,19 @@ RUN if [ "${INSTALL_XDEBUG}" = "true" ]; then \
       echo "zend_extension=/usr/lib/${PHP_MODULE_PREFIX}/modules/xdebug.so" > "$(php-config --ini-dir)/docker-php-ext-xdebug.ini"; \
     fi
 
-# Enable php fpm status page
+# php fpm status page
 RUN set -xe && echo "pm.status_path = /status" >> /usr/local/etc/php-fpm.d/zz-docker.conf
 
 COPY --chmod=755 ./php/php-fpm-healthcheck /usr/local/bin
 
-# Configure non-root user.
+# non-root user
 ARG HOST_USER_ID=1000
 ARG HOST_GROUP_ID=1000
-RUN apk --no-cache add shadow && \
-    groupmod -o -g ${HOST_GROUP_ID} www-data && \
-    usermod -o -u ${HOST_USER_ID} -g www-data www-data
+RUN apk add --no-cache shadow \
+    && groupmod -o -g ${HOST_GROUP_ID} www-data \
+    && usermod -o -u ${HOST_USER_ID} -g www-data www-data
 
-# Source code
-RUN mkdir /app \
-  && chown www-data:www-data /app
+RUN mkdir /app && chown www-data:www-data /app
 
 WORKDIR /app
 
