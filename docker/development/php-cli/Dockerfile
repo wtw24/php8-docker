@@ -13,10 +13,13 @@ RUN apk add --no-cache --virtual .build-deps \
         libwebp-dev \
         postgresql-dev \
     && apk add --no-cache \
+        gdb \
+        strace \
         tzdata \
         bash \
         curl \
         git \
+        nano \
         unzip \
         linux-headers \
         freetype \
@@ -24,12 +27,13 @@ RUN apk add --no-cache --virtual .build-deps \
         libjpeg-turbo \
         libwebp \
         mysql-client \
+        openssh-client \
         libpq \
         libzip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-configure zip \
     && docker-php-ext-install -j$(nproc) gd zip exif pdo_mysql pgsql pdo_pgsql \
-    && apk del .build-deps
+    && apk del .build-deps && rm -rf /var/cache/apk/*
 
 RUN mv $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
 COPY ./php/conf.d /usr/local/etc/php/conf.d
@@ -39,30 +43,33 @@ ARG PHP_VERSION
 ARG INSTALL_XDEBUG=false
 RUN if [ "${INSTALL_XDEBUG}" = "true" ]; then \
       PHP_MODULE_PREFIX="php$(echo ${PHP_VERSION} | grep -oE '^[0-9]+\.[0-9]+' | tr -d '.')"; \
-      apk add --no-cache "${PHP_MODULE_PREFIX}-pecl-xdebug"; \
+      apk add --no-cache "${PHP_MODULE_PREFIX}-pecl-xdebug" || echo "Xdebug package not found for PHP $PHP_VERSION"; \
       echo "zend_extension=/usr/lib/${PHP_MODULE_PREFIX}/modules/xdebug.so" > "$(php-config --ini-dir)/docker-php-ext-xdebug.ini"; \
     fi
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+ENV APP_HOME=/app
+ENV HOME=/home/www-data
 
 # non-root user
 ARG HOST_USER_ID=1000
 ARG HOST_GROUP_ID=1000
 RUN apk add --no-cache shadow \
     && groupmod -o -g ${HOST_GROUP_ID} www-data \
-    &&usermod -o -u ${HOST_USER_ID} -g www-data www-data
+    && usermod -o -u ${HOST_USER_ID} -g www-data www-data
 
-RUN mkdir -p /home/www-data && chown www-data:www-data /home/www-data \
-    && mkdir /app && chown www-data:www-data /app \
-    && mkdir -p /home/www-data/.composer/vendor/bin
+RUN mkdir $APP_HOME \
+    && chown www-data:www-data $APP_HOME \
+    && mkdir -p $HOME/.composer/vendor/bin \
+    && chown -R www-data:www-data $HOME
 
-ENV HOME=/home/www-data
-ENV PATH="/home/www-data/.composer/vendor/bin:$PATH"
-
-# Laravel installer
-RUN composer global require laravel/installer
-ENV COMPOSER_CACHE_DIR=/dev/null
-
-WORKDIR /app
+ENV PATH="$HOME/.composer/vendor/bin:$PATH"
 
 USER www-data
+
+# Laravel installer
+RUN COMPOSER_HOME=$HOME/.composer composer global require laravel/installer
+ENV COMPOSER_CACHE_DIR=/dev/null
+
+WORKDIR $APP_HOME
