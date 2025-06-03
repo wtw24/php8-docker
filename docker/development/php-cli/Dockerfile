@@ -47,6 +47,20 @@ RUN if [ "${INSTALL_XDEBUG}" = "true" ]; then \
       echo "zend_extension=/usr/lib/${PHP_MODULE_PREFIX}/modules/xdebug.so" > "$(php-config --ini-dir)/docker-php-ext-xdebug.ini"; \
     fi
 
+# Redis
+RUN PHP_MODULE_PREFIX="php$(echo ${PHP_VERSION} | grep -oE '^[0-9]+\.[0-9]+' | tr -d '.')"; \
+    apk add --no-cache  \
+        "${PHP_MODULE_PREFIX}-pecl-msgpack" \
+        "${PHP_MODULE_PREFIX}-pecl-igbinary" \
+        "${PHP_MODULE_PREFIX}-pecl-redis" \
+    && ln -s "/$(apk info -qL "${PHP_MODULE_PREFIX}-pecl-msgpack" | grep '.so')" "$(php-config --extension-dir)/msgpack.so" \
+    && echo 'extension=msgpack.so' > "$(php-config --ini-dir)/10-msgpack.ini" \
+    && ln -s "/$(apk info -qL "${PHP_MODULE_PREFIX}-pecl-igbinary" | grep '.so')" "$(php-config --extension-dir)/igbinary.so" \
+    && echo 'extension=igbinary.so' > "$(php-config --ini-dir)/10-igbinary.ini" \
+    && ln -s "/$(apk info -qL "${PHP_MODULE_PREFIX}-pecl-redis" | grep '.so')" "$(php-config --extension-dir)/redis.so" \
+    && echo 'extension=redis.so' > "$(php-config --ini-dir)/20-redis.ini" \
+    && rm -rf /tmp/* /var/cache/apk/*
+
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 ENV APP_HOME=/app

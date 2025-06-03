@@ -1,4 +1,4 @@
-# PHP 8.4 Docker Development Environment
+# PHP 8 Docker Development Environment
 
 
 ## Links for Development Environment
