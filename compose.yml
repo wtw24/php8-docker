@@ -1,8 +1,8 @@
-name: dev-app
+name: dev
 
 services:
   nginx:
-    container_name: dev-app-nginx
+    container_name: dev-nginx
     build:
       context: docker/development
       dockerfile: nginx/Dockerfile
@@ -13,7 +13,7 @@ services:
       - ./src:/app
 
   php-fpm:
-    container_name: dev-app-php-fpm
+    container_name: dev-php-fpm
     build:
       context: docker/development
       dockerfile: php-fpm/Dockerfile
@@ -31,7 +31,7 @@ services:
       - "host.docker.internal:host-gateway"
 
   php-cli:
-    container_name: dev-app-php-cli
+    container_name: dev-php-cli
     build:
       context: docker/development
       dockerfile: php-cli/Dockerfile
@@ -49,7 +49,7 @@ services:
       - "host.docker.internal:host-gateway"
 
   node:
-    container_name: dev-app-node
+    container_name: dev-node
     build:
       context: docker/development
       dockerfile: node/Dockerfile
@@ -67,7 +67,7 @@ services:
 
   mariadb:
     image: "mariadb:${MARIADB_VERSION:-10.6}"
-    container_name: app-mariadb
+    container_name: dev-mariadb
     profiles:
       - mariadb
     ports:
@@ -82,7 +82,7 @@ services:
 
   postgres:
     image: "postgres:${POSTGRES_VERSION:-17-alpine}"
-    container_name: app-postgres
+    container_name: dev-postgres
     profiles:
       - postgres
     ports:
@@ -96,13 +96,24 @@ services:
 
   redis:
     image: "redis:${REDIS_VERSION:-7-alpine}"
-    container_name: app-redis
+    container_name: dev-redis
     profiles:
       - redis
     ports:
       - "${FORWARD_REDIS_PORT:-6379}:6379"
     volumes:
       - redis_data:/data
+
+  buggregator:
+    image: "ghcr.io/buggregator/server:latest"
+    container_name: dev-buggregator
+    profiles:
+      - buggregator
+    ports:
+      - "8000:8000"
+      - "1025:1025"
+      - "9912:9912"
+      - "9913:9913"
 
 volumes:
   mariadb_data:

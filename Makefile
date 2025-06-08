@@ -51,7 +51,8 @@ success:
 
 info:
 	@echo "STACK URLS:"
-	@echo " - App: \t https://app.loc"
+	@echo " - App: \thttps://app.loc"
+	@echo " - Buggregator: http://127.0.0.1:8000"
 	@echo ""
 
 certs:

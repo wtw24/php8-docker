@@ -12,6 +12,7 @@ PROFILES=""
 [ "$USE_POSTGRES" = "true" ] && PROFILES="$PROFILES --profile postgres"
 [ "$USE_MARIADB" = "true" ] && PROFILES="$PROFILES --profile mariadb"
 [ "$USE_REDIS" = "true" ] && PROFILES="$PROFILES --profile redis"
+[ "$USE_BUGGREGATOR" = "true" ] && PROFILES="$PROFILES --profile buggregator"
 
 case "$ACTION" in
   up)
