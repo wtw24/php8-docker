@@ -80,6 +80,10 @@ RUN mkdir $APP_HOME \
 
 ENV PATH="$HOME/.composer/vendor/bin:$PATH"
 
+# Symfony CLI
+RUN curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.alpine.sh' | distro=alpine version=3.19 bash \
+    && apk add symfony-cli
+
 USER www-data
 
 # Laravel installer
