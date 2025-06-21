@@ -12,6 +12,7 @@ RUN apk add --no-cache --virtual .build-deps \
         libjpeg-turbo-dev \
         libwebp-dev \
         postgresql-dev \
+        icu-dev \
     && apk add --no-cache \
         gdb \
         strace \
@@ -30,9 +31,10 @@ RUN apk add --no-cache --virtual .build-deps \
         openssh-client \
         libpq \
         libzip \
+        icu-libs \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-configure zip \
-    && docker-php-ext-install -j$(nproc) gd zip exif pdo_mysql pgsql pdo_pgsql \
+    && docker-php-ext-install -j$(nproc) gd zip exif pdo_mysql pgsql pdo_pgsql intl opcache \
     && apk del .build-deps && rm -rf /var/cache/apk/*
 
 RUN mv $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
@@ -50,6 +52,7 @@ RUN if [ "${INSTALL_XDEBUG}" = "true" ]; then \
 # Redis
 RUN PHP_MODULE_PREFIX="php$(echo ${PHP_VERSION} | grep -oE '^[0-9]+\.[0-9]+' | tr -d '.')"; \
     apk add --no-cache  \
+        lz4-libs \
         "${PHP_MODULE_PREFIX}-pecl-msgpack" \
         "${PHP_MODULE_PREFIX}-pecl-igbinary" \
         "${PHP_MODULE_PREFIX}-pecl-redis" \
