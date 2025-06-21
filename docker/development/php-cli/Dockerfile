@@ -46,7 +46,7 @@ ARG INSTALL_XDEBUG=false
 RUN if [ "${INSTALL_XDEBUG}" = "true" ]; then \
       PHP_MODULE_PREFIX="php$(echo ${PHP_VERSION} | grep -oE '^[0-9]+\.[0-9]+' | tr -d '.')"; \
       apk add --no-cache "${PHP_MODULE_PREFIX}-pecl-xdebug" || echo "Xdebug package not found for PHP $PHP_VERSION"; \
-      echo "zend_extension=/usr/lib/${PHP_MODULE_PREFIX}/modules/xdebug.so" > "$(php-config --ini-dir)/docker-php-ext-xdebug.ini"; \
+      echo "zend_extension=/usr/lib/${PHP_MODULE_PREFIX}/modules/xdebug.so" > "$(php-config --ini-dir)/20-docker-php-ext-xdebug.ini"; \
     fi
 
 # Redis
