@@ -191,4 +191,3 @@ Scripts used by Makefile (e.g., docker-compose.sh) read USE_... variables from y
 -   Symfony CLI and Laravel Installer available out-of-the-box in `php-cli`.
 -   Easy SSL setup for `https://app.loc`.
 -   Flexible service management via environment variables in `.env`.
-```
