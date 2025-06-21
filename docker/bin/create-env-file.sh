@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+set -a
+source .env
+set +a
+
 R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
@@ -23,9 +27,18 @@ if [ ! -f "${ENV_FILE}" ]; then
     cp "${ENV_FILE_TEMPLATE}" "${ENV_FILE}"
     echo -e "${Y}.env${EC} file created from ${Y}.env.example${EC}"
 else
-    if ! cmp -s "${ENV_FILE}" "${ENV_FILE_TEMPLATE}" \
-      && confirm "The contents of '${ENV_FILE}' differ from '${ENV_FILE_TEMPLATE}'. Overwrite '${ENV_FILE}'?"; then
-        cp "${ENV_FILE_TEMPLATE}" "${ENV_FILE}"
-        echo -e "The ${Y}${ENV_FILE}${EC} file has been updated."
+    if [ "${SKIP_ENV_OVERWRITE_CHECK:-false}" = "true" ]; then
+        echo -e "The ${Y}${ENV_FILE}${EC} file already exists. Overwrite check is disabled (SKIP_ENV_OVERWRITE_CHECK=true)."
+    else
+        if ! cmp -s "${ENV_FILE}" "${ENV_FILE_TEMPLATE}"; then
+          if confirm "The contents of '${ENV_FILE}' differ from '${ENV_FILE_TEMPLATE}'. Overwrite '${ENV_FILE}'?"; then
+            cp "${ENV_FILE_TEMPLATE}" "${ENV_FILE}"
+            echo -e "The ${Y}${ENV_FILE}${EC} file has been updated."
+          else
+            echo -e "The ${Y}${ENV_FILE}${EC} file was not overwritten by user choice."
+          fi
+        else
+          echo -e "The ${Y}${ENV_FILE}${EC} file already exists and is identical to ${Y}${ENV_FILE_TEMPLATE}${EC}. No action required."
+        fi
     fi
 fi
